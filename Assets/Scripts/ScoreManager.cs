@@ -1,42 +1,46 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
     public TMP_Text scoreText;
-    int score = 0;
-    void Awake()
-    {
-        if (scoreText == null)
-        {
-            scoreText = FindFirstObjectByType<TMP_Text>();
-        }
+    private int score = 0;
+    [Header("Win Settings")]
+    public int targetScore = 20;
+    public string completeSceneName = "GameComplete";
+    private bool gameFinished = false;
 
-        if (scoreText == null)
-        {
-            Debug.LogError("No TMP_Text found for ScoreManager");
-        }
-    }
     void Start()
     {
         UpdateUI();
     }
     public void AddPoint()
     {
+        if (gameFinished)
+            return;
         score++;
+        Debug.Log("Score: " + score);
         UpdateUI();
+        if (score >= targetScore)
+        {
+            gameFinished = true;
+
+            Debug.Log("Target reached. Loading scene: " + completeSceneName);
+
+            SceneManager.LoadScene(completeSceneName);
+        }
     }
     public void ResetScore()
     {
+        if (gameFinished)
+            return;
         score = 0;
         UpdateUI();
     }
     void UpdateUI()
     {
-        if (scoreText != null)
-        {
-            scoreText.text =
-                "Days since last accident: " + score;
-        }
+        scoreText.text =
+            "Days since last accident: " + score.ToString();
     }
 }
